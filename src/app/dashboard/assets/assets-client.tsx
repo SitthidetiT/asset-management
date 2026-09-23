@@ -1,0 +1,144 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Card, CardContent } from "@/components/ui/card";
+import { Plus, Search, Edit, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { deleteAsset } from "@/actions/assets";
+import { toast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
+
+type AssetRow = {
+  id: string;
+  assetCode: string;
+  name: string;
+  status: string;
+  condition: string;
+  categoryCode: string | null;
+  locationName: string | null;
+  departmentCode: string | null;
+  employeeName: string | null;
+};
+
+export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredData = initialData.filter((item) => {
+    const search = searchTerm.toLowerCase();
+    return (
+      item.assetCode.toLowerCase().includes(search) ||
+      item.name.toLowerCase().includes(search) ||
+      (item.categoryCode && item.categoryCode.toLowerCase().includes(search)) ||
+      (item.locationName && item.locationName.toLowerCase().includes(search))
+    );
+  });
+
+  const handleDelete = (id: string) => {
+    if (confirm("คุณต้องการลบทรัพย์สินนี้ใช่หรือไม่?")) {
+      startTransition(async () => {
+        const result = await deleteAsset(id);
+        if (result.success) {
+          toast({
+            title: "สำเร็จ",
+            description: "ลบทรัพย์สินเรียบร้อยแล้ว",
+          });
+          router.refresh();
+        } else {
+          toast({
+            title: "ข้อผิดพลาด",
+            description: result.error || "ไม่สามารถลบทรัพย์สินได้",
+            variant: "destructive",
+          });
+        }
+      });
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "ACTIVE": return <Badge className="bg-green-500 hover:bg-green-600">ใช้งาน</Badge>;
+      case "IN_MAINTENANCE": return <Badge className="bg-yellow-500 hover:bg-yellow-600 text-black">ซ่อมบำรุง</Badge>;
+      case "BROKEN": return <Badge className="bg-red-500 hover:bg-red-600">ชำรุด</Badge>;
+      case "WRITTEN_OFF": return <Badge className="bg-gray-500 hover:bg-gray-600">แทงจำหน่าย</Badge>;
+      default: return <Badge>{status}</Badge>;
+    }
+  };
+
+  return (
+    <Card>
+      <CardContent className="p-6">
+        <div className="flex justify-between items-center mb-6">
+          <div className="relative w-full max-w-sm">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="ค้นหารหัส หรือชื่อทรัพย์สิน..."
+              className="pl-8"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <Link href="/dashboard/assets/new"><Button>
+              <Plus className="mr-2 h-4 w-4" /> ลงทะเบียนทรัพย์สิน
+            </Button></Link>
+        </div>
+
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>รหัสทรัพย์สิน</TableHead>
+                <TableHead>ชื่อทรัพย์สิน</TableHead>
+                <TableHead>หมวดหมู่</TableHead>
+                <TableHead>สถานที่</TableHead>
+                <TableHead>ผู้ถือครอง</TableHead>
+                <TableHead>สถานะ</TableHead>
+                <TableHead className="text-right">จัดการ</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredData.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center h-24 text-muted-foreground">
+                    ไม่พบข้อมูลทรัพย์สิน
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredData.map((asset) => (
+                  <TableRow key={asset.id}>
+                    <TableCell className="font-medium">{asset.assetCode}</TableCell>
+                    <TableCell>{asset.name}</TableCell>
+                    <TableCell>{asset.categoryCode}</TableCell>
+                    <TableCell>{asset.locationName}</TableCell>
+                    <TableCell>{asset.employeeName || "-"}</TableCell>
+                    <TableCell>{getStatusBadge(asset.status)}</TableCell>
+                    <TableCell className="text-right space-x-2">
+                      <Link href={`/dashboard/assets/${asset.id}`}><Button variant="ghost" size="icon">
+                          <Edit className="h-4 w-4" />
+                        </Button></Link>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-destructive"
+                        onClick={() => handleDelete(asset.id)}
+                        disabled={isPending}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

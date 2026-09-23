@@ -1,0 +1,160 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Card, CardContent } from "@/components/ui/card";
+import { Plus, Search, Edit, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { deleteMaintenance } from "@/actions/maintenance";
+import { toast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
+
+type MaintenanceRow = {
+  id: string;
+  issueDescription: string;
+  status: string;
+  priority: string;
+  cost: string | null;
+  repairDate: Date | null;
+  assetCode: string;
+  assetName: string;
+  employeeName: string | null;
+};
+
+export function MaintenanceClient({ initialData }: { initialData: MaintenanceRow[] }) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredData = initialData.filter((item) => {
+    const search = searchTerm.toLowerCase();
+    return (
+      item.assetCode.toLowerCase().includes(search) ||
+      item.assetName.toLowerCase().includes(search) ||
+      item.issueDescription.toLowerCase().includes(search)
+    );
+  });
+
+  const handleDelete = (id: string) => {
+    if (confirm("คุณต้องการลบรายการแจ้งซ่อมนี้ใช่หรือไม่?")) {
+      startTransition(async () => {
+        const result = await deleteMaintenance(id);
+        if (result.success) {
+          toast({
+            title: "สำเร็จ",
+            description: "ลบรายการแจ้งซ่อมเรียบร้อยแล้ว",
+          });
+          router.refresh();
+        } else {
+          toast({
+            title: "ข้อผิดพลาด",
+            description: result.error || "ไม่สามารถลบรายการแจ้งซ่อมได้",
+            variant: "destructive",
+          });
+        }
+      });
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "PENDING": return <Badge className="bg-yellow-500 hover:bg-yellow-600 text-black">รอดำเนินการ</Badge>;
+      case "IN_PROGRESS": return <Badge className="bg-blue-500 hover:bg-blue-600">กำลังซ่อม</Badge>;
+      case "COMPLETED": return <Badge className="bg-green-500 hover:bg-green-600">ซ่อมเสร็จสิ้น</Badge>;
+      case "CANCELLED": return <Badge className="bg-gray-500 hover:bg-gray-600">ยกเลิก</Badge>;
+      default: return <Badge>{status}</Badge>;
+    }
+  };
+
+  const getPriorityBadge = (priority: string) => {
+    switch (priority) {
+      case "LOW": return <span className="text-gray-500">ต่ำ</span>;
+      case "MEDIUM": return <span className="text-blue-500">ปานกลาง</span>;
+      case "HIGH": return <span className="text-orange-500 font-semibold">สูง</span>;
+      case "URGENT": return <span className="text-red-600 font-bold">ด่วนมาก</span>;
+      default: return <span>{priority}</span>;
+    }
+  };
+
+  return (
+    <Card>
+      <CardContent className="p-6">
+        <div className="flex justify-between items-center mb-6">
+          <div className="relative w-full max-w-sm">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="ค้นหารหัสทรัพย์สิน, ชื่อ หรืออาการเสีย..."
+              className="pl-8"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <Link href="/dashboard/maintenance/new">
+            <Button>
+              <Plus className="mr-2 h-4 w-4" /> แจ้งซ่อม
+            </Button>
+          </Link>
+        </div>
+
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>ทรัพย์สิน</TableHead>
+                <TableHead>อาการเสีย</TableHead>
+                <TableHead>ความเร่งด่วน</TableHead>
+                <TableHead>ผู้แจ้งซ่อม</TableHead>
+                <TableHead>วันที่ส่งซ่อม</TableHead>
+                <TableHead>สถานะ</TableHead>
+                <TableHead className="text-right">จัดการ</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredData.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center h-24 text-muted-foreground">
+                    ไม่พบข้อมูลแจ้งซ่อม
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredData.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="font-medium">
+                      <div>{item.assetCode}</div>
+                      <div className="text-sm text-muted-foreground">{item.assetName}</div>
+                    </TableCell>
+                    <TableCell className="max-w-[200px] truncate">{item.issueDescription}</TableCell>
+                    <TableCell>{getPriorityBadge(item.priority)}</TableCell>
+                    <TableCell>{item.employeeName || "-"}</TableCell>
+                    <TableCell>{item.repairDate ? new Date(item.repairDate).toLocaleDateString("th-TH") : "-"}</TableCell>
+                    <TableCell>{getStatusBadge(item.status)}</TableCell>
+                    <TableCell className="text-right space-x-2">
+                      <Link href={`/dashboard/maintenance/${item.id}`}>
+                        <Button variant="ghost" size="icon">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-destructive"
+                        onClick={() => handleDelete(item.id)}
+                        disabled={isPending}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
