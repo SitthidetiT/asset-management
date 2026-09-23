@@ -3,7 +3,7 @@
 import { db } from "@/db";
 import { employees, departments } from "@/db/schema/master";
 import { employeeSchema } from "@/lib/validations/master";
-import { eq, desc } from "drizzle-orm";
+import { eq, asc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 export async function getEmployees() {
@@ -25,7 +25,7 @@ export async function getEmployees() {
       })
       .from(employees)
       .leftJoin(departments, eq(employees.departmentId, departments.id))
-      .orderBy(desc(employees.createdAt));
+      .orderBy(asc(employees.employeeCode));
   } catch (error) {
     console.error("Failed to fetch employees:", error);
     return [];
