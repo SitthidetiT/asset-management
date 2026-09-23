@@ -6,12 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus, Search, Edit, Trash2 } from "lucide-react";
+import { Plus, Search, Edit, Trash2, FileSpreadsheet, FileText } from "lucide-react";
 import Link from "next/link";
 import { deleteAsset } from "@/actions/assets";
 import { toast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import * as XLSX from "xlsx";
+
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import { LogoBase64, THSarabunNew } from "@/lib/fonts";
 
 type AssetRow = {
   id: string;
@@ -75,34 +80,158 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
     }
   };
 
-  const handleExportExcel = () => {
-    // 1. Prepare data for Excel
-    const excelData = filteredData.map((item) => ({
-      "รหัสทรัพย์สิน": item.assetCode,
-      "ชื่อทรัพย์สิน": item.name,
-      "S/N (ซีเรียลนัมเบอร์)": item.serialNumber || "-",
-      "หมวดหมู่": item.categoryCode || "-",
-      "แผนก": item.departmentCode || "-",
-      "สถานที่": item.locationName || "-",
-      "ผู้ถือครอง": item.employeeName || "-",
-      "สถานะ": item.status,
-      "สภาพเครื่อง": item.condition,
-      "วันที่ซื้อ": item.purchaseDate ? new Date(item.purchaseDate).toLocaleDateString("th-TH") : "-",
-      "ราคา (บาท)": item.purchasePrice ? Number(item.purchasePrice).toLocaleString("th-TH") : "-",
-      "วันหมดประกัน": item.warrantyExpiry ? new Date(item.warrantyExpiry).toLocaleDateString("th-TH") : "-",
-    }));
+  const handleExportExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Assets");
 
-    // 2. Create worksheet and workbook
-    const worksheet = XLSX.utils.json_to_sheet(excelData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Assets");
+    // Add Logo
+    const logoId = workbook.addImage({
+      base64: LogoBase64,
+      extension: "png",
+    });
+    worksheet.addImage(logoId, {
+      tl: { col: 0, row: 0 },
+      ext: { width: 120, height: 60 }
+    });
 
-    // 3. Generate file name with current date
+    // Add Company Headers
+    worksheet.mergeCells('D2:K2');
+    const titleCell = worksheet.getCell('D2');
+    titleCell.value = "AUTO - TECH SYSTEMS CO.,LTD";
+    titleCell.font = { name: 'Arial', size: 24, bold: true, italic: true, color: { argb: 'FFFF0000' } };
+    titleCell.alignment = { horizontal: 'center' };
+
+    worksheet.mergeCells('D3:K3');
+    const addressCell = worksheet.getCell('D3');
+    addressCell.value = "Manufacturing : 58/2,58/71 Moo 9 T.Raikhing A.Samphran Nakornpathom 73210 Thailand (Head Office)";
+    addressCell.font = { name: 'Arial', size: 10, bold: true };
+    addressCell.alignment = { horizontal: 'center' };
+
+    worksheet.mergeCells('D4:K4');
+    const contactCell = worksheet.getCell('D4');
+    contactCell.value = "Tel : 065 789 5226 E-Mail : ats@auto-techsystems.com Mobile : (081 777 1669) TAX: 0735556004823";
+    contactCell.font = { name: 'Arial', size: 10, bold: true };
+    contactCell.alignment = { horizontal: 'center' };
+
+    worksheet.addRow([]);
+    worksheet.addRow([]); // Blank rows for spacing
+
+    // Add Table Headers
+    const headers = [
+      "รหัสทรัพย์สิน", "ชื่อทรัพย์สิน", "S/N (ซีเรียลนัมเบอร์)", "หมวดหมู่",
+      "แผนก", "สถานที่", "ผู้ถือครอง", "สถานะ", "สภาพเครื่อง", 
+      "วันที่ซื้อ", "ราคา (บาท)", "วันหมดประกัน"
+    ];
+    const headerRow = worksheet.addRow(headers);
+    headerRow.eachCell((cell) => {
+      cell.font = { bold: true };
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD3D3D3' } };
+      cell.border = {
+        top: { style: 'thin' }, left: { style: 'thin' },
+        bottom: { style: 'thin' }, right: { style: 'thin' }
+      };
+      cell.alignment = { horizontal: 'center', vertical: 'middle' };
+    });
+
+    // Add Data
+    filteredData.forEach((item) => {
+      const row = worksheet.addRow([
+        item.assetCode,
+        item.name,
+        item.serialNumber || "-",
+        item.categoryCode || "-",
+        item.departmentCode || "-",
+        item.locationName || "-",
+        item.employeeName || "-",
+        item.status,
+        item.condition,
+        item.purchaseDate ? new Date(item.purchaseDate).toLocaleDateString("th-TH") : "-",
+        item.purchasePrice ? Number(item.purchasePrice).toLocaleString("th-TH") : "-",
+        item.warrantyExpiry ? new Date(item.warrantyExpiry).toLocaleDateString("th-TH") : "-",
+      ]);
+      row.eachCell((cell) => {
+        cell.border = {
+          top: { style: 'thin' }, left: { style: 'thin' },
+          bottom: { style: 'thin' }, right: { style: 'thin' }
+        };
+      });
+    });
+
+    // Adjust column widths
+    worksheet.columns.forEach((column) => {
+      column.width = 15;
+    });
+    worksheet.getColumn(2).width = 25; // Name is wider
+    worksheet.getColumn(3).width = 20; // SN
+    worksheet.getColumn(7).width = 20; // Employee
+
+    // Export
+    const buffer = await workbook.xlsx.writeBuffer();
     const date = new Date();
     const fileName = `Asset_Report_${date.getDate().toString().padStart(2, '0')}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getFullYear()}.xlsx`;
+    saveAs(new Blob([buffer]), fileName);
+  };
 
-    // 4. Download the file
-    XLSX.writeFile(workbook, fileName);
+  const handleExportPDF = () => {
+    const doc = new jsPDF('landscape');
+    
+    // Add Thai Font
+    doc.addFileToVFS("THSarabunNew.ttf", THSarabunNew);
+    doc.addFont("THSarabunNew.ttf", "THSarabunNew", "normal");
+    doc.setFont("THSarabunNew");
+
+    // Add Logo
+    doc.addImage(LogoBase64, "PNG", 14, 10, 30, 15);
+
+    // Add Header Text
+    doc.setTextColor(255, 0, 0); // Red
+    doc.setFontSize(24);
+    doc.setFont("helvetica", "bolditalic");
+    doc.text("AUTO - TECH SYSTEMS CO.,LTD", 148, 18, { align: 'center' });
+    
+    doc.setTextColor(0, 0, 0); // Black
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("Manufacturing : 58/2,58/71 Moo 9 T.Raikhing A.Samphran Nakornpathom 73210 Thailand (Head Office)", 148, 25, { align: 'center' });
+    doc.text("Tel : 065 789 5226 E-Mail : ats@auto-techsystems.com Mobile : (081 777 1669) TAX: 0735556004823", 148, 30, { align: 'center' });
+
+    // Table Data
+    const tableColumn = [
+      "รหัสทรัพย์สิน", "ชื่อทรัพย์สิน", "S/N", "หมวดหมู่", 
+      "แผนก", "สถานที่", "ผู้ถือครอง", "สถานะ", 
+      "วันที่ซื้อ", "ราคา"
+    ];
+    
+    const tableRows = filteredData.map(item => [
+      item.assetCode,
+      item.name,
+      item.serialNumber || "-",
+      item.categoryCode || "-",
+      item.departmentCode || "-",
+      item.locationName || "-",
+      item.employeeName || "-",
+      item.status,
+      item.purchaseDate ? new Date(item.purchaseDate).toLocaleDateString("th-TH") : "-",
+      item.purchasePrice ? Number(item.purchasePrice).toLocaleString("th-TH") : "-",
+    ]);
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 40,
+      styles: {
+        font: "THSarabunNew", // Use Thai font in table
+        fontSize: 12,
+      },
+      headStyles: {
+        fillColor: [200, 200, 200],
+        textColor: 20,
+        fontStyle: 'bold'
+      },
+    });
+
+    const date = new Date();
+    doc.save(`Asset_Report_${date.getDate().toString().padStart(2, '0')}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getFullYear()}.pdf`);
   };
 
   return (
@@ -120,9 +249,13 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
             />
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={handleExportExcel}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 h-4 w-4 text-green-600"><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M15 18a3 3 0 1 0-6 0"/><path d="M15 18a3 3 0 1 1-6 0"/><path d="M12 12v6"/><path d="m15 15-3 3-3-3"/><path d="M18 22H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8l6 6v12a2 2 0 0 1-2 2Z"/></svg>
-              Export Excel
+            <Button variant="outline" onClick={handleExportExcel} className="text-green-600 border-green-600 hover:bg-green-50">
+              <FileSpreadsheet className="mr-2 h-4 w-4" />
+              Excel
+            </Button>
+            <Button variant="outline" onClick={handleExportPDF} className="text-red-600 border-red-600 hover:bg-red-50">
+              <FileText className="mr-2 h-4 w-4" />
+              PDF
             </Button>
             <Link href="/dashboard/assets/new">
               <Button>
@@ -162,9 +295,11 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
                     <TableCell>{asset.employeeName || "-"}</TableCell>
                     <TableCell>{getStatusBadge(asset.status)}</TableCell>
                     <TableCell className="text-right space-x-2">
-                      <Link href={`/dashboard/assets/${asset.id}`}><Button variant="ghost" size="icon">
+                      <Link href={`/dashboard/assets/${asset.id}`}>
+                        <Button variant="ghost" size="icon">
                           <Edit className="h-4 w-4" />
-                        </Button></Link>
+                        </Button>
+                      </Link>
                       <Button
                         variant="ghost"
                         size="icon"
