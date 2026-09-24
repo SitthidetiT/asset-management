@@ -338,7 +338,7 @@ export function AssetForm({
                 name="imageUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>อัปโหลดรูปภาพ (แนะนำให้ย่อขนาดก่อนอัปโหลด หรือขนาดไม่เกิน 1MB)</FormLabel>
+                    <FormLabel>อัปโหลดรูปภาพ (ขนาดไม่เกิน 30MB)</FormLabel>
                     <FormControl>
                       <div className="space-y-4">
                         {field.value && (
@@ -362,11 +362,11 @@ export function AssetForm({
                             const file = e.target.files?.[0];
                             if (!file) return;
                             
-                            // Check size (1MB limit for Base64 DB storage is recommended)
-                            if (file.size > 1 * 1024 * 1024) {
+                            // Check size (30MB limit)
+                            if (file.size > 30 * 1024 * 1024) {
                               toast({
                                 title: "ไฟล์ภาพใหญ่เกินไป",
-                                description: "กรุณาอัปโหลดรูปภาพขนาดไม่เกิน 1MB เพื่อไม่ให้ฐานข้อมูลหนักเกินไป",
+                                description: "กรุณาอัปโหลดรูปภาพขนาดไม่เกิน 30MB",
                                 variant: "destructive"
                               });
                               e.target.value = '';
