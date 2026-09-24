@@ -202,10 +202,10 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
     const pageWidth = doc.internal.pageSize.getWidth();
     const centerX = pageWidth / 2;
 
-    // Add Logo (Shifted right to be closer to centered text)
-    const logoWidth = 50;
-    const logoHeight = 25;
-    doc.addImage(LogoBase64, "PNG", 55, 10, logoWidth, logoHeight);
+    // Add Logo (Far left to prevent overlap with centered text)
+    const logoWidth = 45;
+    const logoHeight = 22;
+    doc.addImage(LogoBase64, "PNG", 20, 10, logoWidth, logoHeight);
 
     // Add Header Text (Perfectly Centered)
     doc.setTextColor(255, 0, 0); // Red
@@ -218,6 +218,9 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
     doc.setFont("helvetica", "bold");
     doc.text("Manufacturing : 58/2,58/71 Moo 9 T.Raikhing A.Samphran Nakornpathom 73210 Thailand (Head Office)", centerX, 26, { align: 'center' });
     doc.text("Tel : 065 789 5226 E-Mail : ats@auto-techsystems.com Mobile : (081 777 1669) TAX: 0735556004823", centerX, 32, { align: 'center' });
+
+    // Reset font for Thai text in table
+    doc.setFont("THSarabunNew", "normal");
 
     // Table Data
     const tableColumn = [
@@ -245,12 +248,14 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
       startY: 45,
       styles: {
         font: "THSarabunNew", // Use Thai font in table
+        fontStyle: "normal",
         fontSize: 12,
       },
       headStyles: {
         fillColor: [200, 200, 200],
         textColor: 20,
-        fontStyle: 'bold'
+        font: "THSarabunNew",
+        fontStyle: 'normal',
       },
     });
 
