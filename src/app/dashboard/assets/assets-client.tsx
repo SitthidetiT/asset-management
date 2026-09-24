@@ -42,9 +42,9 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
   const [filterDepartment, setFilterDepartment] = useState("ALL");
   const [filterEmployee, setFilterEmployee] = useState("ALL");
 
-  const uniqueCategories = Array.from(new Set(initialData.map(a => a.categoryCode).filter(Boolean))).sort();
-  const uniqueDepartments = Array.from(new Set(initialData.map(a => a.departmentCode).filter(Boolean))).sort();
-  const uniqueEmployees = Array.from(new Set(initialData.map(a => a.employeeName).filter(Boolean))).sort();
+  const uniqueCategories = Array.from(new Set(initialData.map(a => a.categoryCode).filter(Boolean) as string[])).sort();
+  const uniqueDepartments = Array.from(new Set(initialData.map(a => a.departmentCode).filter(Boolean) as string[])).sort();
+  const uniqueEmployees = Array.from(new Set(initialData.map(a => a.employeeName).filter(Boolean) as string[])).sort();
 
   const filteredData = initialData.filter((item) => {
     // Dropdown filters
