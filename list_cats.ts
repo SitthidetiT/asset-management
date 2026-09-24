@@ -1,0 +1,1 @@
+import * as dotenv from 'dotenv'; dotenv.config(); import { db } from './src/db/index.js'; import { categories } from './src/db/schema/master.js'; async function run() { const cats = await db.select().from(categories); console.log(cats); process.exit(0); } run();  

@@ -75,7 +75,11 @@ export function NewTransferForm({ masterData }: { masterData: { assets: any[]; e
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>เลือกทรัพย์สินที่ต้องการโอน <span className="text-destructive">*</span></FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        value={field.value}
+                        items={masterData.assets.map((a) => ({ value: a.id, label: `[${a.assetCode}] ${a.name}` }))}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="ค้นหาและเลือกทรัพย์สิน..." />
@@ -83,7 +87,7 @@ export function NewTransferForm({ masterData }: { masterData: { assets: any[]; e
                         </FormControl>
                         <SelectContent>
                           {masterData.assets.map((a) => (
-                            <SelectItem key={a.id} value={a.id}>
+                            <SelectItem key={a.id} value={a.id} label={`[${a.assetCode}] ${a.name}`}>
                               [{a.assetCode}] {a.name} (ปัจจุบัน: {a.employeeName || 'ส่วนกลาง'})
                             </SelectItem>
                           ))}
@@ -101,7 +105,14 @@ export function NewTransferForm({ masterData }: { masterData: { assets: any[]; e
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>โอนให้พนักงาน (ผู้รับใหม่)</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          value={field.value}
+                          items={[
+                            { value: "", label: "-- ไม่ระบุ / คืนส่วนกลาง --" },
+                            ...masterData.employees.map((e) => ({ value: e.id, label: `${e.employeeCode} - ${e.firstName} ${e.lastName}` }))
+                          ]}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="เลือกพนักงาน (ถ้ามี)..." />
@@ -110,7 +121,7 @@ export function NewTransferForm({ masterData }: { masterData: { assets: any[]; e
                           <SelectContent>
                             <SelectItem value="">-- ไม่ระบุ / คืนส่วนกลาง --</SelectItem>
                             {masterData.employees.map((e) => (
-                              <SelectItem key={e.id} value={e.id}>
+                              <SelectItem key={e.id} value={e.id} label={`${e.employeeCode} - ${e.firstName} ${e.lastName}`}>
                                 {e.employeeCode} - {e.firstName} {e.lastName}
                               </SelectItem>
                             ))}
@@ -127,7 +138,14 @@ export function NewTransferForm({ masterData }: { masterData: { assets: any[]; e
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>ย้ายไปสถานที่ใหม่</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          value={field.value}
+                          items={[
+                            { value: "", label: "-- ไม่ระบุ --" },
+                            ...masterData.locations.map((l) => ({ value: l.id, label: l.name }))
+                          ]}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="เลือกสถานที่ (ถ้ามี)..." />
@@ -136,7 +154,7 @@ export function NewTransferForm({ masterData }: { masterData: { assets: any[]; e
                           <SelectContent>
                             <SelectItem value="">-- ไม่ระบุ --</SelectItem>
                             {masterData.locations.map((l) => (
-                              <SelectItem key={l.id} value={l.id}>
+                              <SelectItem key={l.id} value={l.id} label={l.name}>
                                 {l.name}
                               </SelectItem>
                             ))}

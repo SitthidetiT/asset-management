@@ -99,7 +99,14 @@ export function NewAuditForm({ employees }: { employees: any[] }) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>ผู้ดูแลการตรวจนับ (Auditor)</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        value={field.value}
+                        items={[
+                          { value: "", label: "-- ไม่ระบุ --" },
+                          ...employees.map((e) => ({ value: e.id, label: `${e.employeeCode} - ${e.firstName} ${e.lastName}` }))
+                        ]}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="เลือกพนักงาน..." />
@@ -108,7 +115,7 @@ export function NewAuditForm({ employees }: { employees: any[] }) {
                         <SelectContent>
                           <SelectItem value="">-- ไม่ระบุ --</SelectItem>
                           {employees.map((e) => (
-                            <SelectItem key={e.id} value={e.id}>
+                            <SelectItem key={e.id} value={e.id} label={`${e.employeeCode} - ${e.firstName} ${e.lastName}`}>
                               {e.employeeCode} - {e.firstName} {e.lastName}
                             </SelectItem>
                           ))}

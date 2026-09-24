@@ -11,6 +11,9 @@ import Link from "next/link";
 import { deleteAsset } from "@/actions/assets";
 import { toast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 type AssetRow = {
   id: string;
@@ -35,6 +38,25 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
   const [filterCategory, setFilterCategory] = useState("ALL");
   const [filterDepartment, setFilterDepartment] = useState("ALL");
   const [filterEmployee, setFilterEmployee] = useState("ALL");
+
+  const ALL_COLUMNS = [
+    { id: "assetCode", label: "รหัสทรัพย์สิน" },
+    { id: "name", label: "ชื่อทรัพย์สิน" },
+    { id: "serialNumber", label: "S/N" },
+    { id: "categoryCode", label: "หมวดหมู่" },
+    { id: "departmentCode", label: "แผนก" },
+    { id: "locationName", label: "สถานที่" },
+    { id: "employeeName", label: "ผู้ถือครอง" },
+    { id: "status", label: "สถานะ" },
+    { id: "condition", label: "สภาพเครื่อง" },
+    { id: "purchaseDate", label: "วันที่ซื้อ" },
+    { id: "purchasePrice", label: "ราคา (บาท)" },
+    { id: "warrantyExpiry", label: "วันหมดประกัน" }
+  ];
+
+  const [exportModalOpen, setExportModalOpen] = useState(false);
+  const [selectedColumns, setSelectedColumns] = useState<string[]>(ALL_COLUMNS.map(c => c.id));
+
 
   const uniqueCategories = Array.from(new Set(initialData.map(a => a.categoryCode).filter(Boolean) as string[])).sort();
   const uniqueDepartments = Array.from(new Set(initialData.map(a => a.departmentCode).filter(Boolean) as string[])).sort();
@@ -168,11 +190,8 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
     worksheet.addRow([]); // Blank rows for spacing
 
     // Add Table Headers
-    const headers = [
-      "รหัสทรัพย์สิน", "ชื่อทรัพย์สิน", "S/N (ซีเรียลนัมเบอร์)", "หมวดหมู่",
-      "แผนก", "สถานที่", "ผู้ถือครอง", "สถานะ", "สภาพเครื่อง", 
-      "วันที่ซื้อ", "ราคา (บาท)", "วันหมดประกัน"
-    ];
+    const activeCols = ALL_COLUMNS.filter(c => selectedColumns.includes(c.id));
+    const headers = activeCols.map(c => c.label);
     const headerRow = worksheet.addRow(headers);
     headerRow.eachCell((cell) => {
       cell.font = { bold: true };
@@ -258,24 +277,28 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
     doc.setFont("THSarabunNew", "normal");
 
     // Table Data
-    const tableColumn = [
-      "รหัสทรัพย์สิน", "ชื่อทรัพย์สิน", "S/N", "หมวดหมู่", 
-      "แผนก", "สถานที่", "ผู้ถือครอง", "สถานะ", 
-      "วันที่ซื้อ", "ราคา"
-    ];
+    const activeCols = ALL_COLUMNS.filter(c => selectedColumns.includes(c.id));
+    const tableColumn = activeCols.map(c => c.label);
     
-    const tableRows = filteredData.map(item => [
-      item.assetCode,
-      item.name,
-      item.serialNumber || "-",
-      item.categoryCode || "-",
-      item.departmentCode || "-",
-      item.locationName || "-",
-      item.employeeName || "-",
-      getStatusText(item.status),
-      item.purchaseDate ? new Date(item.purchaseDate).toLocaleDateString("th-TH") : "-",
-      item.purchasePrice ? Number(item.purchasePrice).toLocaleString("th-TH") : "-",
-    ]);
+    const tableRows = filteredData.map(item => {
+      return activeCols.map(col => {
+        switch(col.id) {
+          case 'assetCode': return item.assetCode;
+          case 'name': return item.name;
+          case 'serialNumber': return item.serialNumber || "-";
+          case 'categoryCode': return item.categoryCode || "-";
+          case 'departmentCode': return item.departmentCode || "-";
+          case 'locationName': return item.locationName || "-";
+          case 'employeeName': return item.employeeName || "-";
+          case 'status': return getStatusText(item.status);
+          case 'condition': return getConditionText(item.condition);
+          case 'purchaseDate': return item.purchaseDate ? new Date(item.purchaseDate).toLocaleDateString("th-TH") : "-";
+          case 'purchasePrice': return item.purchasePrice ? Number(item.purchasePrice).toLocaleString("th-TH") : "-";
+          case 'warrantyExpiry': return item.warrantyExpiry ? new Date(item.warrantyExpiry).toLocaleDateString("th-TH") : "-";
+          default: return "-";
+        }
+      });
+    });
 
     autoTable(doc, {
       head: [tableColumn],

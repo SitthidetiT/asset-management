@@ -1,0 +1,1 @@
+import './load_env.ts'; import { db } from '../src/db/index'; import { categories } from '../src/db/schema/master'; async function run() { await db.insert(categories).values([{ code: 'DRL', nameTh: '????????', nameEn: 'Drill Set', icon: 'drill' }, { code: 'LWS', nameTh: '???????? L', nameEn: 'L-Wrench Set', icon: 'wrench' }]); console.log('Added!'); process.exit(0); } run();  

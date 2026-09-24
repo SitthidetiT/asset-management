@@ -106,7 +106,12 @@ export function MaintenanceForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>ทรัพย์สิน <span className="text-destructive">*</span></FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isEdit}>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        value={field.value} 
+                        disabled={isEdit}
+                        items={masterData.assets.map((a) => ({ value: a.id, label: `${a.assetCode} - ${a.name}` }))}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="เลือกทรัพย์สินที่ต้องการแจ้งซ่อม" />
@@ -114,7 +119,7 @@ export function MaintenanceForm({
                         </FormControl>
                         <SelectContent>
                           {masterData.assets.map((a) => (
-                            <SelectItem key={a.id} value={a.id}>
+                            <SelectItem key={a.id} value={a.id} label={`${a.assetCode} - ${a.name}`}>
                               {a.assetCode} - {a.name}
                             </SelectItem>
                           ))}
@@ -131,7 +136,14 @@ export function MaintenanceForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>ผู้แจ้ง</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        value={field.value}
+                        items={[
+                          { value: "", label: "-- ไม่ระบุ --" },
+                          ...masterData.employees.map((e) => ({ value: e.id, label: `${e.employeeCode} - ${e.firstName} ${e.lastName}` }))
+                        ]}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="เลือกผู้แจ้ง" />
@@ -140,7 +152,7 @@ export function MaintenanceForm({
                         <SelectContent>
                           <SelectItem value="">-- ไม่ระบุ --</SelectItem>
                           {masterData.employees.map((e) => (
-                            <SelectItem key={e.id} value={e.id}>
+                            <SelectItem key={e.id} value={e.id} label={`${e.employeeCode} - ${e.firstName} ${e.lastName}`}>
                               {e.employeeCode} - {e.firstName} {e.lastName}
                             </SelectItem>
                           ))}
@@ -157,7 +169,16 @@ export function MaintenanceForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>ความเร่งด่วน</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        value={field.value}
+                        items={[
+                          { value: "LOW", label: "ต่ำ" },
+                          { value: "MEDIUM", label: "ปานกลาง" },
+                          { value: "HIGH", label: "สูง" },
+                          { value: "URGENT", label: "ด่วนมาก" }
+                        ]}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="เลือกความเร่งด่วน" />
@@ -182,7 +203,16 @@ export function MaintenanceForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>สถานะการซ่อม</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          value={field.value}
+                          items={[
+                            { value: "PENDING", label: "รอดำเนินการ" },
+                            { value: "IN_PROGRESS", label: "กำลังซ่อม" },
+                            { value: "COMPLETED", label: "ซ่อมเสร็จสิ้น" },
+                            { value: "CANCELLED", label: "ยกเลิก" }
+                          ]}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="เลือกสถานะ" />

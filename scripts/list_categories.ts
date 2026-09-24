@@ -1,0 +1,1 @@
+import './load_env.ts'; import { db } from '../src/db/index'; import { categories } from '../src/db/schema/master'; async function run() { const cats = await db.select().from(categories); console.log(cats); process.exit(0); } run();  
