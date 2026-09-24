@@ -94,6 +94,26 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
     }
   };
 
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "ACTIVE": return "ใช้งาน";
+      case "IN_MAINTENANCE": return "ซ่อมบำรุง";
+      case "BROKEN": return "ชำรุด";
+      case "WRITTEN_OFF": return "แทงจำหน่าย";
+      default: return status;
+    }
+  };
+
+  const getConditionText = (condition: string) => {
+    switch (condition) {
+      case "NEW": return "ใหม่";
+      case "GOOD": return "ดี";
+      case "FAIR": return "ปานกลาง";
+      case "POOR": return "แย่";
+      default: return condition;
+    }
+  };
+
   const handleExportExcel = async () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Assets");
@@ -176,8 +196,8 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
         item.departmentCode || "-",
         item.locationName || "-",
         item.employeeName || "-",
-        item.status,
-        item.condition,
+        getStatusText(item.status),
+        getConditionText(item.condition),
         item.purchaseDate ? new Date(item.purchaseDate).toLocaleDateString("th-TH") : "-",
         item.purchasePrice ? Number(item.purchasePrice).toLocaleString("th-TH") : "-",
         item.warrantyExpiry ? new Date(item.warrantyExpiry).toLocaleDateString("th-TH") : "-",
@@ -250,7 +270,7 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
       item.departmentCode || "-",
       item.locationName || "-",
       item.employeeName || "-",
-      item.status,
+      getStatusText(item.status),
       item.purchaseDate ? new Date(item.purchaseDate).toLocaleDateString("th-TH") : "-",
       item.purchasePrice ? Number(item.purchasePrice).toLocaleString("th-TH") : "-",
     ]);

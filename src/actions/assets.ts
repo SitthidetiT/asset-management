@@ -20,7 +20,7 @@ export async function getAssets() {
       purchaseDate: assets.purchaseDate,
       purchasePrice: assets.purchasePrice,
       warrantyExpiry: assets.warrantyExpiry,
-      categoryCode: categories.code,
+      categoryCode: categories.nameTh,
       locationName: locations.name,
       departmentCode: departments.code,
       employeeName: sql<string>`concat(${employees.firstName}, ' ', ${employees.lastName})`,
