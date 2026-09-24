@@ -7,14 +7,24 @@ import { unstable_noStore } from "next/cache";
 
 export async function getDashboardStats() {
   unstable_noStore();
-  const allAssets = await db.select().from(assets).where(eq(assets.isDeleted, false));
-  
-  const totalAssets = allAssets.length;
-  const totalValue = allAssets.reduce((sum, asset) => sum + Number(asset.purchasePrice || 0), 0);
-  
-  const activeAssets = allAssets.filter(a => a.status === 'ACTIVE').length;
-  const maintenanceAssets = allAssets.filter(a => a.status === 'IN_MAINTENANCE').length;
-  const writtenOffAssets = allAssets.filter(a => a.status === 'WRITTEN_OFF').length;
+  const [statsResult] = await db
+    .select({
+      totalAssets: sql<number>`count(*)::int`,
+      totalValue: sql<number>`coalesce(sum(${assets.purchasePrice}), 0)::float`,
+      activeAssets: sql<number>`sum(case when ${assets.status} = 'ACTIVE' then 1 else 0 end)::int`,
+      maintenanceAssets: sql<number>`sum(case when ${assets.status} = 'IN_MAINTENANCE' then 1 else 0 end)::int`,
+      writtenOffAssets: sql<number>`sum(case when ${assets.status} = 'WRITTEN_OFF' then 1 else 0 end)::int`,
+    })
+    .from(assets)
+    .where(eq(assets.isDeleted, false));
+
+  const { totalAssets, totalValue, activeAssets, maintenanceAssets, writtenOffAssets } = statsResult || {
+    totalAssets: 0,
+    totalValue: 0,
+    activeAssets: 0,
+    maintenanceAssets: 0,
+    writtenOffAssets: 0,
+  };
 
   // Group by category
   const categoryData = await db
@@ -28,8 +38,13 @@ export async function getDashboardStats() {
     .groupBy(categories.nameTh);
 
   // Maintenance cost total
-  const allMaintenance = await db.select().from(maintenanceRecords);
-  const totalMaintenanceCost = allMaintenance.reduce((sum, rec) => sum + Number(rec.cost || 0), 0);
+  const [maintenanceResult] = await db
+    .select({
+      totalCost: sql<number>`coalesce(sum(${maintenanceRecords.cost}), 0)::float`
+    })
+    .from(maintenanceRecords);
+    
+  const totalMaintenanceCost = maintenanceResult?.totalCost || 0;
 
   return {
     totalAssets,
