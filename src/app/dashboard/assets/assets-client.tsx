@@ -199,15 +199,14 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
     doc.addFont("THSarabunNew.ttf", "THSarabunNew", "normal");
     doc.setFont("THSarabunNew");
 
-    const pageWidth = doc.internal.pageSize.getWidth();
-    // Center the text in the remaining space to the right of the logo, or just center page
-    // Using center of the page looks more balanced, but let's shift slightly to right
-    const textCenterX = (pageWidth + 40) / 2; 
+    // Group Logo and Text together in the center of the page
+    const logoWidth = 55;
+    const logoHeight = 28;
+    // Place logo at X = 60
+    doc.addImage(LogoBase64, "PNG", 60, 10, logoWidth, logoHeight);
 
-    // Add Logo (Enlarged, Left aligned, same line as header)
-    const logoWidth = 60;
-    const logoHeight = 30;
-    doc.addImage(LogoBase64, "PNG", 14, 10, logoWidth, logoHeight);
+    // Center text at X = 175 (so it sits right next to the logo)
+    const textCenterX = 175;
 
     // Add Header Text
     doc.setTextColor(255, 0, 0); // Red
