@@ -132,7 +132,7 @@ export function AssetForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>หมวดหมู่ <span className="text-destructive">*</span></FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isEdit}>
+                      <Select onValueChange={field.onChange} value={field.value} disabled={isEdit}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="เลือกหมวดหมู่" />
@@ -140,8 +140,8 @@ export function AssetForm({
                         </FormControl>
                         <SelectContent>
                           {masterData.categories.map((c) => (
-                            <SelectItem key={c.id} value={c.id}>
-                              {c.code} - {c.nameTh}
+                            <SelectItem key={c.id} value={c.id} label={`${c.code} - ${c.nameTh}`}>
+                              {`${c.code} - ${c.nameTh}`}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -156,7 +156,7 @@ export function AssetForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>สถานที่ตั้ง <span className="text-destructive">*</span></FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isEdit}>
+                      <Select onValueChange={field.onChange} value={field.value} disabled={isEdit}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="เลือกสถานที่ตั้ง" />
@@ -164,8 +164,8 @@ export function AssetForm({
                         </FormControl>
                         <SelectContent>
                           {masterData.locations.map((l) => (
-                            <SelectItem key={l.id} value={l.id}>
-                              {l.code} - {l.name}
+                            <SelectItem key={l.id} value={l.id} label={`${l.code} - ${l.name}`}>
+                              {`${l.code} - ${l.name}`}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -180,7 +180,7 @@ export function AssetForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>แผนกที่รับผิดชอบ <span className="text-destructive">*</span></FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="เลือกแผนก" />
@@ -188,8 +188,8 @@ export function AssetForm({
                         </FormControl>
                         <SelectContent>
                           {masterData.departments.map((d) => (
-                            <SelectItem key={d.id} value={d.id}>
-                              {d.code} - {d.name}
+                            <SelectItem key={d.id} value={d.id} label={`${d.code} - ${d.name}`}>
+                              {`${d.code} - ${d.name}`}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -204,7 +204,7 @@ export function AssetForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>ผู้ถือครอง (พนักงาน)</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="ไม่มีผู้ถือครอง / เป็นของกองกลาง" />
@@ -213,8 +213,8 @@ export function AssetForm({
                         <SelectContent>
                           <SelectItem value="">-- ไม่มีผู้ถือครอง --</SelectItem>
                           {masterData.employees.map((e) => (
-                            <SelectItem key={e.id} value={e.id}>
-                              {e.employeeCode} - {e.firstName} {e.lastName}
+                            <SelectItem key={e.id} value={e.id} label={`${e.employeeCode} - ${e.firstName} ${e.lastName}`}>
+                              {`${e.employeeCode} - ${e.firstName} ${e.lastName}`}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -237,7 +237,7 @@ export function AssetForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>สถานะทรัพย์สิน</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="เลือกสถานะ" />
@@ -260,7 +260,7 @@ export function AssetForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>สภาพทรัพย์สิน</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="เลือกสภาพ" />
