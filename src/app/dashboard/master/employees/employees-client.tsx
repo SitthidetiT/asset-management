@@ -196,7 +196,11 @@ export default function EmployeesClient({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>แผนก</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <Select 
+                            onValueChange={field.onChange} 
+                            value={field.value}
+                            items={departments.map((dept) => ({ value: dept.id, label: `${dept.code} - ${dept.name}` }))}
+                          >
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="เลือกแผนก" />
@@ -204,7 +208,7 @@ export default function EmployeesClient({
                             </FormControl>
                             <SelectContent>
                               {departments.map((dept) => (
-                                <SelectItem key={dept.id} value={dept.id}>
+                                <SelectItem key={dept.id} value={dept.id} label={`${dept.code} - ${dept.name}`}>
                                   {dept.code} - {dept.name}
                                 </SelectItem>
                               ))}
