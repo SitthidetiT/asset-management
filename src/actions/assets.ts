@@ -85,6 +85,7 @@ export async function createAsset(data: z.infer<typeof assetSchema>) {
         supplier: validatedData.supplier || null,
         warrantyExpiry: validatedData.warrantyExpiry || null,
         notes: validatedData.notes || null,
+        imageUrl: validatedData.imageUrl || null,
       });
     });
 
@@ -115,6 +116,7 @@ export async function updateAsset(id: string, data: z.infer<typeof assetSchema>)
       supplier: validatedData.supplier || null,
       warrantyExpiry: validatedData.warrantyExpiry || null,
       notes: validatedData.notes || null,
+      imageUrl: validatedData.imageUrl || null,
       updatedAt: new Date(),
     }).where(eq(assets.id, id));
 

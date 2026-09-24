@@ -13,6 +13,7 @@ export const assets = pgTable("assets", {
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
   serialNumber: varchar("serial_number", { length: 100 }),
+  imageUrl: text("image_url"),
   
   // Relations
   categoryId: uuid("category_id").notNull().references(() => categories.id),

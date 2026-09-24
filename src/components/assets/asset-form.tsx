@@ -52,6 +52,7 @@ export function AssetForm({
       purchasePrice: initialData?.purchasePrice?.toString() || "",
       supplier: initialData?.supplier || "",
       notes: initialData?.notes || "",
+      imageUrl: initialData?.imageUrl || "",
     },
   });
 
@@ -326,6 +327,65 @@ export function AssetForm({
                   )}
                 />
               </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <h3 className="text-lg font-semibold mb-4">รูปภาพทรัพย์สิน</h3>
+              <FormField
+                control={formControl}
+                name="imageUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>อัปโหลดรูปภาพ (แนะนำให้ย่อขนาดก่อนอัปโหลด หรือขนาดไม่เกิน 1MB)</FormLabel>
+                    <FormControl>
+                      <div className="space-y-4">
+                        {field.value && (
+                          <div className="relative w-40 h-40 border rounded-md overflow-hidden">
+                            <img src={field.value} alt="Asset preview" className="object-cover w-full h-full" />
+                            <Button 
+                              type="button" 
+                              variant="destructive" 
+                              size="sm" 
+                              className="absolute top-1 right-1 h-6 w-6 p-0 rounded-full"
+                              onClick={() => field.onChange("")}
+                            >
+                              &times;
+                            </Button>
+                          </div>
+                        )}
+                        <Input 
+                          type="file" 
+                          accept="image/*" 
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            
+                            // Check size (1MB limit for Base64 DB storage is recommended)
+                            if (file.size > 1 * 1024 * 1024) {
+                              toast({
+                                title: "ไฟล์ภาพใหญ่เกินไป",
+                                description: "กรุณาอัปโหลดรูปภาพขนาดไม่เกิน 1MB เพื่อไม่ให้ฐานข้อมูลหนักเกินไป",
+                                variant: "destructive"
+                              });
+                              e.target.value = '';
+                              return;
+                            }
+                            
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              field.onChange(reader.result as string);
+                            };
+                            reader.readAsDataURL(file);
+                          }} 
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </CardContent>
           </Card>
 

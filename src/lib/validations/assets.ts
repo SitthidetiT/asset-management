@@ -16,4 +16,5 @@ export const assetSchema = z.object({
   supplier: z.string().optional(),
   warrantyExpiry: z.date().optional().nullable(),
   notes: z.string().optional(),
+  imageUrl: z.string().optional(),
 });
