@@ -104,7 +104,7 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
       extension: "png",
     });
     worksheet.addImage(logoId, {
-      tl: { col: 2, row: 0 }, // Column C
+      tl: { col: 1, row: 0 }, // Column C
       ext: { width: 180, height: 75 }
     });
 

@@ -23,8 +23,6 @@ import {
   Package
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { signOut } from "next-auth/react";
-
 const sidebarNav = [
   {
     title: "ภาพรวม (Dashboard)",
@@ -149,15 +147,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             <Bell className="h-5 w-5" />
             <span className="sr-only">Notifications</span>
           </Button>
-          
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <User className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={() => signOut()} className="rounded-full text-destructive">
-              <LogOut className="h-5 w-5" />
-            </Button>
-          </div>
         </header>
 
         {/* Mobile menu (simple implementation) */}
