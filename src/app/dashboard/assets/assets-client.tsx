@@ -202,22 +202,21 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
     const pageWidth = doc.internal.pageSize.getWidth();
     const centerX = pageWidth / 2;
 
-    // Add Logo (Far left to prevent overlap with centered text)
-    const logoWidth = 45;
-    const logoHeight = 22;
-    doc.addImage(LogoBase64, "PNG", 20, 10, logoWidth, logoHeight);
+    // Add Logo (Aligned next to the text block)
+    const logoWidth = 35;
+    const logoHeight = 16;
+    doc.addImage(LogoBase64, "PNG", 35, 12, logoWidth, logoHeight);
 
-    // Add Header Text (Perfectly Centered)
+    // Add Header Text (Perfectly Centered, Adjusted Sizes)
     doc.setTextColor(255, 0, 0); // Red
-    doc.setFontSize(24);
-    doc.setFont("helvetica", "bolditalic");
+    doc.setFontSize(20);
+    doc.setFont("helvetica", "bold"); // standard bold, not italic
     doc.text("AUTO - TECH SYSTEMS CO.,LTD", centerX, 18, { align: 'center' });
     
     doc.setTextColor(0, 0, 0); // Black
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "bold");
-    doc.text("Manufacturing : 58/2,58/71 Moo 9 T.Raikhing A.Samphran Nakornpathom 73210 Thailand (Head Office)", centerX, 26, { align: 'center' });
-    doc.text("Tel : 065 789 5226 E-Mail : ats@auto-techsystems.com Mobile : (081 777 1669) TAX: 0735556004823", centerX, 32, { align: 'center' });
+    doc.setFontSize(10);
+    doc.text("Manufacturing : 58/2,58/71 Moo 9 T.Raikhing A.Samphran Nakornpathom 73210 Thailand (Head Office)", centerX, 24, { align: 'center' });
+    doc.text("Tel : 065 789 5226 E-Mail : ats@auto-techsystems.com Mobile : (081 777 1669) TAX: 0735556004823", centerX, 29, { align: 'center' });
 
     // Reset font for Thai text in table
     doc.setFont("THSarabunNew", "normal");
