@@ -12,12 +12,6 @@ import { deleteAsset } from "@/actions/assets";
 import { toast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 
-import ExcelJS from "exceljs";
-import { saveAs } from "file-saver";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-import { LogoBase64, THSarabunNew } from "@/lib/fonts";
-
 type AssetRow = {
   id: string;
   assetCode: string;
@@ -115,6 +109,10 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
   };
 
   const handleExportExcel = async () => {
+    const ExcelJS = (await import("exceljs")).default;
+    const { saveAs } = await import("file-saver");
+    const { LogoBase64 } = await import("@/lib/fonts");
+
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Assets");
 
@@ -225,7 +223,11 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
     saveAs(new Blob([buffer]), fileName);
   };
 
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
+    const jsPDF = (await import("jspdf")).default;
+    const autoTable = (await import("jspdf-autotable")).default;
+    const { LogoBase64, THSarabunNew } = await import("@/lib/fonts");
+
     const doc = new jsPDF('landscape');
     
     // Add Thai Font
