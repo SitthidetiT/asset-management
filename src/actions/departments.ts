@@ -59,6 +59,9 @@ export async function deleteDepartment(id: string) {
     return { success: true };
   } catch (error: any) {
     console.error("Delete department error:", error);
+    if (error.message?.includes("foreign key constraint") || error.message?.includes("violates foreign key")) {
+      return { success: false, error: "ไม่สามารถลบแผนกนี้ได้ เนื่องจากมีพนักงานหรือทรัพย์สินที่ผูกอยู่กับแผนกนี้" };
+    }
     return { success: false, error: error.message || "Failed to delete department" };
   }
 }

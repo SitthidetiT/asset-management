@@ -61,6 +61,9 @@ export async function deleteCategory(id: string) {
     return { success: true };
   } catch (error: any) {
     console.error("Delete category error:", error);
+    if (error.message?.includes("foreign key constraint") || error.message?.includes("violates foreign key")) {
+      return { success: false, error: "ไม่สามารถลบหมวดหมู่นี้ได้ เนื่องจากมีทรัพย์สินที่กำลังใช้งานหมวดหมู่นี้อยู่" };
+    }
     return { success: false, error: error.message || "Failed to delete category" };
   }
 }

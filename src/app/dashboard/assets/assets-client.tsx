@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus, Search, Edit, Trash2, FileSpreadsheet, FileText } from "lucide-react";
+import { Plus, Search, Edit, Trash2, FileSpreadsheet, FileText, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { deleteAsset } from "@/actions/assets";
 import { toast } from "@/hooks/use-toast";
@@ -38,6 +38,8 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
   const [filterCategory, setFilterCategory] = useState("ALL");
   const [filterDepartment, setFilterDepartment] = useState("ALL");
   const [filterEmployee, setFilterEmployee] = useState("ALL");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 50;
 
   const ALL_COLUMNS = [
     { id: "assetCode", label: "รหัสทรัพย์สิน" },
@@ -78,6 +80,9 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
       (item.locationName && item.locationName.toLowerCase().includes(search))
     );
   });
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const paginatedData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const handleDelete = (id: string) => {
     if (confirm("คุณต้องการลบทรัพย์สินนี้ใช่หรือไม่?")) {
@@ -362,14 +367,46 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
             </select>
           </div>
           <div className="flex flex-wrap gap-2 w-full md:w-auto">
-            <Button variant="outline" onClick={handleExportExcel} className="text-green-600 border-green-600 hover:bg-green-50">
-              <FileSpreadsheet className="mr-2 h-4 w-4" />
-              Excel
-            </Button>
-            <Button variant="outline" onClick={handleExportPDF} className="text-red-600 border-red-600 hover:bg-red-50">
-              <FileText className="mr-2 h-4 w-4" />
-              PDF
-            </Button>
+            <Dialog open={exportModalOpen} onOpenChange={setExportModalOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline">
+                  <FileSpreadsheet className="mr-2 h-4 w-4" /> นำออกข้อมูล
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>เลือกคอลัมน์ที่ต้องการนำออก</DialogTitle>
+                </DialogHeader>
+                <div className="grid grid-cols-2 gap-4 py-4">
+                  {ALL_COLUMNS.map(col => (
+                    <div key={col.id} className="flex items-center space-x-2">
+                      <Checkbox 
+                        id={`col-${col.id}`}
+                        checked={selectedColumns.includes(col.id)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedColumns([...selectedColumns, col.id]);
+                          } else {
+                            setSelectedColumns(selectedColumns.filter(id => id !== col.id));
+                          }
+                        }}
+                      />
+                      <Label htmlFor={`col-${col.id}`}>{col.label}</Label>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex gap-2 justify-end mt-4">
+                  <Button variant="outline" onClick={handleExportExcel} className="text-green-600 border-green-600 hover:bg-green-50">
+                    <FileSpreadsheet className="mr-2 h-4 w-4" />
+                    Excel
+                  </Button>
+                  <Button variant="outline" onClick={handleExportPDF} className="text-red-600 border-red-600 hover:bg-red-50">
+                    <FileText className="mr-2 h-4 w-4" />
+                    PDF
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
             <Link href="/dashboard/assets/new">
               <Button>
                 <Plus className="mr-2 h-4 w-4" /> ลงทะเบียนทรัพย์สิน
@@ -392,14 +429,14 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredData.length === 0 ? (
+              {paginatedData.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center h-24 text-muted-foreground">
                     ไม่พบข้อมูลทรัพย์สิน
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredData.map((asset) => (
+                paginatedData.map((asset) => (
                   <TableRow key={asset.id}>
                     <TableCell className="font-medium">{asset.assetCode}</TableCell>
                     <TableCell>{asset.name}</TableCell>
@@ -429,6 +466,33 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
             </TableBody>
           </Table>
         </div>
+
+        {/* Pagination UI */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mt-4">
+            <div className="text-sm text-muted-foreground">
+              แสดง {((currentPage - 1) * itemsPerPage) + 1} ถึง {Math.min(currentPage * itemsPerPage, filteredData.length)} จากทั้งหมด {filteredData.length} รายการ
+            </div>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4" /> ก่อนหน้า
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} 
+                disabled={currentPage === totalPages}
+              >
+                ถัดไป <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

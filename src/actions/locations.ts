@@ -59,6 +59,9 @@ export async function deleteLocation(id: string) {
     return { success: true };
   } catch (error: any) {
     console.error("Delete location error:", error);
+    if (error.message?.includes("foreign key constraint") || error.message?.includes("violates foreign key")) {
+      return { success: false, error: "ไม่สามารถลบสถานที่นี้ได้ เนื่องจากมีทรัพย์สินที่ถูกจัดเก็บอยู่ในสถานที่นี้" };
+    }
     return { success: false, error: error.message || "Failed to delete location" };
   }
 }

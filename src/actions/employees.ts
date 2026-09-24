@@ -84,6 +84,9 @@ export async function deleteEmployee(id: string) {
     return { success: true };
   } catch (error: any) {
     console.error("Delete employee error:", error);
+    if (error.message?.includes("foreign key constraint") || error.message?.includes("violates foreign key")) {
+      return { success: false, error: "ไม่สามารถลบพนักงานนี้ได้ เนื่องจากมีทรัพย์สินที่พนักงานคนนี้ถือครองอยู่" };
+    }
     return { success: false, error: error.message || "Failed to delete employee" };
   }
 }
