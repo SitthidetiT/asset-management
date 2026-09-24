@@ -5,9 +5,10 @@ import { assets, assetSequences, categories, locations, departments, employees }
 import { eq, desc, and, sql } from "drizzle-orm";
 import { assetSchema } from "@/lib/validations/assets";
 import { z } from "zod";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 
 export async function getAssets() {
+  noStore();
   return await db
     .select({
       id: assets.id,
@@ -34,6 +35,7 @@ export async function getAssets() {
 }
 
 export async function getAssetById(id: string) {
+  noStore();
   const result = await db.select().from(assets).where(and(eq(assets.id, id), eq(assets.isDeleted, false))).limit(1);
   return result[0] || null;
 }
