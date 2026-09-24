@@ -15,7 +15,7 @@ export default async function EmployeesPage() {
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">พนักงาน (Employees)</h2>
       </div>
-      <div className="hidden h-full flex-1 flex-col space-y-8 md:flex">
+      <div className="flex h-full flex-1 flex-col space-y-8">
         <EmployeesClient initialData={employeesData} departments={departmentsData} />
       </div>
     </div>
