@@ -237,7 +237,7 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
   return (
     <Card>
       <CardContent className="p-6">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
           <div className="relative w-full max-w-sm">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -248,7 +248,7 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 w-full md:w-auto">
             <Button variant="outline" onClick={handleExportExcel} className="text-green-600 border-green-600 hover:bg-green-50">
               <FileSpreadsheet className="mr-2 h-4 w-4" />
               Excel
@@ -265,7 +265,7 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
           </div>
         </div>
 
-        <div className="rounded-md border">
+        <div className="rounded-md border overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>

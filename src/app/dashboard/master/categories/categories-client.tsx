@@ -129,7 +129,7 @@ export default function CategoriesClient({ initialData }: { initialData: Categor
   return (
     <Card>
       <CardContent className="p-6">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
           <div className="flex w-full max-w-sm items-center space-x-2">
             <Input type="text" placeholder="ค้นหาหมวดหมู่..." />
           </div>
@@ -204,7 +204,7 @@ export default function CategoriesClient({ initialData }: { initialData: Categor
           </Dialog>
         </div>
 
-        <div className="rounded-md border">
+        <div className="rounded-md border overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>

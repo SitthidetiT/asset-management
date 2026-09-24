@@ -109,7 +109,7 @@ export function AuditSessionClient({ audit, initialItems }: { audit: any; initia
 
       <Card>
         <CardContent className="p-6">
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div className="relative w-full max-w-sm">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
@@ -122,7 +122,7 @@ export function AuditSessionClient({ audit, initialItems }: { audit: any; initia
             </div>
           </div>
 
-          <div className="rounded-md border">
+          <div className="rounded-md border overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
