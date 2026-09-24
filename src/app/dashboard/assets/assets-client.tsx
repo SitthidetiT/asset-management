@@ -84,6 +84,20 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Assets");
 
+    // Configure for A4 Landscape Printing
+    worksheet.pageSetup = {
+      paperSize: 9, // A4
+      orientation: 'landscape',
+      fitToPage: true,
+      fitToWidth: 1,
+      fitToHeight: 0,
+      margins: {
+        left: 0.25, right: 0.25,
+        top: 0.75, bottom: 0.75,
+        header: 0.3, footer: 0.3
+      }
+    };
+
     // Add Logo
     const logoId = workbook.addImage({
       base64: LogoBase64,
