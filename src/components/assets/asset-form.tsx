@@ -132,7 +132,12 @@ export function AssetForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>หมวดหมู่ <span className="text-destructive">*</span></FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value} disabled={isEdit}>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        value={field.value} 
+                        disabled={isEdit}
+                        items={masterData.categories.map((c) => ({ value: c.id, label: `${c.code} - ${c.nameTh}` }))}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="เลือกหมวดหมู่" />
@@ -156,7 +161,12 @@ export function AssetForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>สถานที่ตั้ง <span className="text-destructive">*</span></FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value} disabled={isEdit}>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        value={field.value} 
+                        disabled={isEdit}
+                        items={masterData.locations.map((l) => ({ value: l.id, label: `${l.code} - ${l.name}` }))}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="เลือกสถานที่ตั้ง" />
@@ -180,7 +190,11 @@ export function AssetForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>แผนกที่รับผิดชอบ <span className="text-destructive">*</span></FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        value={field.value}
+                        items={masterData.departments.map((d) => ({ value: d.id, label: `${d.code} - ${d.name}` }))}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="เลือกแผนก" />
@@ -204,7 +218,14 @@ export function AssetForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>ผู้ถือครอง (พนักงาน)</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        value={field.value}
+                        items={[
+                          { value: "", label: "-- ไม่มีผู้ถือครอง --" },
+                          ...masterData.employees.map((e) => ({ value: e.id, label: `${e.employeeCode} - ${e.firstName} ${e.lastName}` }))
+                        ]}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="ไม่มีผู้ถือครอง / เป็นของกองกลาง" />
@@ -237,7 +258,16 @@ export function AssetForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>สถานะทรัพย์สิน</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        value={field.value}
+                        items={[
+                          { value: "ACTIVE", label: "ใช้งาน" },
+                          { value: "IN_MAINTENANCE", label: "ซ่อมบำรุง" },
+                          { value: "BROKEN", label: "ชำรุด" },
+                          { value: "WRITTEN_OFF", label: "แทงจำหน่าย" }
+                        ]}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="เลือกสถานะ" />
@@ -260,7 +290,16 @@ export function AssetForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>สภาพทรัพย์สิน</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        value={field.value}
+                        items={[
+                          { value: "NEW", label: "ใหม่" },
+                          { value: "GOOD", label: "ดี" },
+                          { value: "FAIR", label: "พอใช้" },
+                          { value: "POOR", label: "เสื่อมโทรม" }
+                        ]}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="เลือกสภาพ" />
