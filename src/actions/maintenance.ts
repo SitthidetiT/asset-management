@@ -5,9 +5,10 @@ import { maintenanceRecords, assets, employees } from "@/db/schema";
 import { eq, desc, and, sql } from "drizzle-orm";
 import { maintenanceSchema } from "@/lib/validations/maintenance";
 import { z } from "zod";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_noStore } from "next/cache";
 
 export async function getMaintenanceRecords() {
+  unstable_noStore();
   return await db
     .select({
       id: maintenanceRecords.id,
@@ -28,6 +29,7 @@ export async function getMaintenanceRecords() {
 }
 
 export async function getMaintenanceById(id: string) {
+  unstable_noStore();
   const result = await db.select().from(maintenanceRecords).where(and(eq(maintenanceRecords.id, id), eq(maintenanceRecords.isDeleted, false))).limit(1);
   return result[0] || null;
 }

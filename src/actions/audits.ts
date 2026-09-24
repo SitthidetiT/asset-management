@@ -5,9 +5,10 @@ import { audits, auditItems, assets, employees } from "@/db/schema";
 import { eq, desc, sql, and } from "drizzle-orm";
 import { auditSchema } from "@/lib/validations/audits";
 import { z } from "zod";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_noStore } from "next/cache";
 
 export async function getAudits() {
+  unstable_noStore();
   return await db
     .select({
       id: audits.id,
@@ -25,11 +26,13 @@ export async function getAudits() {
 }
 
 export async function getAuditById(id: string) {
+  unstable_noStore();
   const result = await db.select().from(audits).where(and(eq(audits.id, id), eq(audits.isDeleted, false))).limit(1);
   return result[0] || null;
 }
 
 export async function getAuditItems(auditId: string) {
+  unstable_noStore();
   return await db
     .select({
       id: auditItems.id,

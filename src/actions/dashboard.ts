@@ -3,8 +3,10 @@
 import { db } from "@/db";
 import { assets, categories, maintenanceRecords } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
+import { unstable_noStore } from "next/cache";
 
 export async function getDashboardStats() {
+  unstable_noStore();
   const allAssets = await db.select().from(assets).where(eq(assets.isDeleted, false));
   
   const totalAssets = allAssets.length;

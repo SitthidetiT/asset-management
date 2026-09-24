@@ -4,9 +4,10 @@ import { db } from "@/db";
 import { assetTransfers, assets, employees, locations } from "@/db/schema";
 import { eq, desc, sql } from "drizzle-orm";
 import { transferSchema } from "@/lib/validations/transfers";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_noStore } from "next/cache";
 
 export async function getTransfers() {
+  unstable_noStore();
   const fromEmployee = db.select({ id: employees.id, name: sql<string>`concat(${employees.firstName}, ' ', ${employees.lastName})`.as('from_name') }).from(employees).as('fromEmployee');
   const toEmployee = db.select({ id: employees.id, name: sql<string>`concat(${employees.firstName}, ' ', ${employees.lastName})`.as('to_name') }).from(employees).as('toEmployee');
 
