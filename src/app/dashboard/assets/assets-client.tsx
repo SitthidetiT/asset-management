@@ -368,10 +368,8 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
           </div>
           <div className="flex flex-wrap gap-2 w-full md:w-auto">
             <Dialog open={exportModalOpen} onOpenChange={setExportModalOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline">
-                  <FileSpreadsheet className="mr-2 h-4 w-4" /> นำออกข้อมูล
-                </Button>
+              <DialogTrigger render={<Button variant="outline" />}>
+                <FileSpreadsheet className="mr-2 h-4 w-4" /> นำออกข้อมูล
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
