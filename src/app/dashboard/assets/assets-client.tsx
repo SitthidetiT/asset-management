@@ -38,8 +38,22 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [searchTerm, setSearchTerm] = useState("");
+  const [filterCategory, setFilterCategory] = useState("ALL");
+  const [filterDepartment, setFilterDepartment] = useState("ALL");
+  const [filterEmployee, setFilterEmployee] = useState("ALL");
+
+  const uniqueCategories = Array.from(new Set(initialData.map(a => a.categoryCode).filter(Boolean))).sort();
+  const uniqueDepartments = Array.from(new Set(initialData.map(a => a.departmentCode).filter(Boolean))).sort();
+  const uniqueEmployees = Array.from(new Set(initialData.map(a => a.employeeName).filter(Boolean))).sort();
 
   const filteredData = initialData.filter((item) => {
+    // Dropdown filters
+    if (filterCategory !== "ALL" && item.categoryCode !== filterCategory) return false;
+    if (filterDepartment !== "ALL" && item.departmentCode !== filterDepartment) return false;
+    if (filterEmployee !== "ALL" && item.employeeName !== filterEmployee) return false;
+
+    // Search input
+    if (!searchTerm) return true;
     const search = searchTerm.toLowerCase();
     return (
       item.assetCode.toLowerCase().includes(search) ||
@@ -266,15 +280,41 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
     <Card>
       <CardContent className="p-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <div className="relative w-full max-w-sm">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="ค้นหารหัส หรือชื่อทรัพย์สิน..."
-              className="pl-8"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+          <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto flex-1">
+            <div className="relative w-full max-w-sm">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="ค้นหารหัส หรือชื่อทรัพย์สิน..."
+                className="pl-8"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <select 
+              className="flex h-9 w-full sm:w-[150px] rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              value={filterCategory}
+              onChange={e => setFilterCategory(e.target.value)}
+            >
+              <option value="ALL">ทุกหมวดหมู่</option>
+              {uniqueCategories.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <select 
+              className="flex h-9 w-full sm:w-[150px] rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              value={filterDepartment}
+              onChange={e => setFilterDepartment(e.target.value)}
+            >
+              <option value="ALL">ทุกแผนก</option>
+              {uniqueDepartments.map(d => <option key={d} value={d}>{d}</option>)}
+            </select>
+            <select 
+              className="flex h-9 w-full sm:w-[150px] rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              value={filterEmployee}
+              onChange={e => setFilterEmployee(e.target.value)}
+            >
+              <option value="ALL">ทุกคน</option>
+              {uniqueEmployees.map(e => <option key={e} value={e}>{e}</option>)}
+            </select>
           </div>
           <div className="flex flex-wrap gap-2 w-full md:w-auto">
             <Button variant="outline" onClick={handleExportExcel} className="text-green-600 border-green-600 hover:bg-green-50">
