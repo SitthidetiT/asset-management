@@ -21,7 +21,7 @@ export async function getAssets() {
       purchasePrice: assets.purchasePrice,
       warrantyExpiry: assets.warrantyExpiry,
       categoryCode: categories.nameTh,
-      locationName: sql<string>`COALESCE(${locations.description}, ${locations.name})`,
+      locationName: locations.name,
       departmentCode: departments.name,
       employeeName: sql<string>`concat(${employees.firstName}, ' ', ${employees.lastName})`,
     })
