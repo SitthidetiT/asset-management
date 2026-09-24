@@ -210,20 +210,25 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
 
     // Add Data
     filteredData.forEach((item) => {
-      const row = worksheet.addRow([
-        item.assetCode,
-        item.name,
-        item.serialNumber || "-",
-        item.categoryCode || "-",
-        item.departmentCode || "-",
-        item.locationName || "-",
-        item.employeeName || "-",
-        getStatusText(item.status),
-        getConditionText(item.condition),
-        item.purchaseDate ? new Date(item.purchaseDate).toLocaleDateString("th-TH") : "-",
-        item.purchasePrice ? Number(item.purchasePrice).toLocaleString("th-TH") : "-",
-        item.warrantyExpiry ? new Date(item.warrantyExpiry).toLocaleDateString("th-TH") : "-",
-      ]);
+      const rowData = activeCols.map(col => {
+        switch(col.id) {
+          case 'assetCode': return item.assetCode;
+          case 'name': return item.name;
+          case 'serialNumber': return item.serialNumber || "-";
+          case 'categoryCode': return item.categoryCode || "-";
+          case 'departmentCode': return item.departmentCode || "-";
+          case 'locationName': return item.locationName || "-";
+          case 'employeeName': return item.employeeName || "-";
+          case 'status': return getStatusText(item.status);
+          case 'condition': return getConditionText(item.condition);
+          case 'purchaseDate': return item.purchaseDate ? new Date(item.purchaseDate).toLocaleDateString("th-TH") : "-";
+          case 'purchasePrice': return item.purchasePrice ? Number(item.purchasePrice).toLocaleString("th-TH") : "-";
+          case 'warrantyExpiry': return item.warrantyExpiry ? new Date(item.warrantyExpiry).toLocaleDateString("th-TH") : "-";
+          default: return "-";
+        }
+      });
+      
+      const row = worksheet.addRow(rowData);
       row.eachCell((cell) => {
         cell.border = {
           top: { style: 'thin' }, left: { style: 'thin' },
