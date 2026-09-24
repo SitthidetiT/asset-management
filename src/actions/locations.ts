@@ -4,9 +4,10 @@ import { db } from "@/db";
 import { locations } from "@/db/schema/master";
 import { locationSchema } from "@/lib/validations/master";
 import { eq, desc } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_noStore } from "next/cache";
 
 export async function getLocations() {
+  unstable_noStore();
   try {
     return await db.select().from(locations).orderBy(desc(locations.createdAt));
   } catch (error) {
@@ -23,7 +24,7 @@ export async function createLocation(data: unknown) {
       name: validated.name,
       description: validated.description,
     });
-    revalidatePath("/dashboard/locations");
+    revalidatePath("/dashboard/master/locations");
     return { success: true };
   } catch (error: any) {
     console.error("Create location error:", error);
@@ -43,7 +44,7 @@ export async function updateLocation(id: string, data: unknown) {
         updatedAt: new Date(),
       })
       .where(eq(locations.id, id));
-    revalidatePath("/dashboard/locations");
+    revalidatePath("/dashboard/master/locations");
     return { success: true };
   } catch (error: any) {
     console.error("Update location error:", error);
@@ -54,7 +55,7 @@ export async function updateLocation(id: string, data: unknown) {
 export async function deleteLocation(id: string) {
   try {
     await db.delete(locations).where(eq(locations.id, id));
-    revalidatePath("/dashboard/locations");
+    revalidatePath("/dashboard/master/locations");
     return { success: true };
   } catch (error: any) {
     console.error("Delete location error:", error);

@@ -4,9 +4,10 @@ import { db } from "@/db";
 import { categories } from "@/db/schema/master";
 import { categorySchema } from "@/lib/validations/master";
 import { eq, desc } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_noStore } from "next/cache";
 
 export async function getCategories() {
+  unstable_noStore();
   try {
     return await db.select().from(categories).orderBy(desc(categories.createdAt));
   } catch (error) {
@@ -24,7 +25,7 @@ export async function createCategory(data: unknown) {
       nameEn: validated.nameEn,
       icon: validated.icon,
     });
-    revalidatePath("/dashboard/categories");
+    revalidatePath("/dashboard/master/categories");
     return { success: true };
   } catch (error: any) {
     console.error("Create category error:", error);
@@ -45,7 +46,7 @@ export async function updateCategory(id: string, data: unknown) {
         updatedAt: new Date(),
       })
       .where(eq(categories.id, id));
-    revalidatePath("/dashboard/categories");
+    revalidatePath("/dashboard/master/categories");
     return { success: true };
   } catch (error: any) {
     console.error("Update category error:", error);
@@ -56,7 +57,7 @@ export async function updateCategory(id: string, data: unknown) {
 export async function deleteCategory(id: string) {
   try {
     await db.delete(categories).where(eq(categories.id, id));
-    revalidatePath("/dashboard/categories");
+    revalidatePath("/dashboard/master/categories");
     return { success: true };
   } catch (error: any) {
     console.error("Delete category error:", error);

@@ -4,9 +4,10 @@ import { db } from "@/db";
 import { employees, departments } from "@/db/schema/master";
 import { employeeSchema } from "@/lib/validations/master";
 import { eq, asc } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_noStore } from "next/cache";
 
 export async function getEmployees() {
+  unstable_noStore();
   try {
     return await db
       .select({
@@ -44,7 +45,7 @@ export async function createEmployee(data: unknown) {
       email: validated.email || null,
       isActive: validated.isActive,
     });
-    revalidatePath("/dashboard/employees");
+    revalidatePath("/dashboard/master/employees");
     return { success: true };
   } catch (error: any) {
     console.error("Create employee error:", error);
@@ -68,7 +69,7 @@ export async function updateEmployee(id: string, data: unknown) {
         updatedAt: new Date(),
       })
       .where(eq(employees.id, id));
-    revalidatePath("/dashboard/employees");
+    revalidatePath("/dashboard/master/employees");
     return { success: true };
   } catch (error: any) {
     console.error("Update employee error:", error);
@@ -79,7 +80,7 @@ export async function updateEmployee(id: string, data: unknown) {
 export async function deleteEmployee(id: string) {
   try {
     await db.delete(employees).where(eq(employees.id, id));
-    revalidatePath("/dashboard/employees");
+    revalidatePath("/dashboard/master/employees");
     return { success: true };
   } catch (error: any) {
     console.error("Delete employee error:", error);

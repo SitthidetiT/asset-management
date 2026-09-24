@@ -4,9 +4,10 @@ import { db } from "@/db";
 import { departments } from "@/db/schema/master";
 import { departmentSchema } from "@/lib/validations/master";
 import { eq, desc } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_noStore } from "next/cache";
 
 export async function getDepartments() {
+  unstable_noStore();
   try {
     return await db.select().from(departments).orderBy(desc(departments.createdAt));
   } catch (error) {
@@ -23,7 +24,7 @@ export async function createDepartment(data: unknown) {
       name: validated.name,
       description: validated.description,
     });
-    revalidatePath("/dashboard/departments");
+    revalidatePath("/dashboard/master/departments");
     return { success: true };
   } catch (error: any) {
     console.error("Create department error:", error);
@@ -43,7 +44,7 @@ export async function updateDepartment(id: string, data: unknown) {
         updatedAt: new Date(),
       })
       .where(eq(departments.id, id));
-    revalidatePath("/dashboard/departments");
+    revalidatePath("/dashboard/master/departments");
     return { success: true };
   } catch (error: any) {
     console.error("Update department error:", error);
@@ -54,7 +55,7 @@ export async function updateDepartment(id: string, data: unknown) {
 export async function deleteDepartment(id: string) {
   try {
     await db.delete(departments).where(eq(departments.id, id));
-    revalidatePath("/dashboard/departments");
+    revalidatePath("/dashboard/master/departments");
     return { success: true };
   } catch (error: any) {
     console.error("Delete department error:", error);
