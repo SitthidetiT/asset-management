@@ -22,8 +22,8 @@ import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
-  email: z.string().email({
-    message: "กรุณาระบุอีเมลให้ถูกต้อง",
+  username: z.string().min(1, {
+    message: "กรุณาระบุชื่อผู้ใช้",
   }),
   password: z.string().min(1, {
     message: "กรุณาระบุรหัสผ่าน",
@@ -38,7 +38,7 @@ export function LoginForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
     },
   });
@@ -47,7 +47,7 @@ export function LoginForm() {
     setError(undefined);
     startTransition(async () => {
       const formData = new FormData();
-      formData.append("email", values.email);
+      formData.append("username", values.username);
       formData.append("password", values.password);
       
       const result = await authenticate(undefined, formData);
@@ -81,13 +81,13 @@ export function LoginForm() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="email"
+              name="username"
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               render={({ field }: { field: any }) => (
                 <FormItem>
-                  <FormLabel>อีเมล</FormLabel>
+                  <FormLabel>ชื่อผู้ใช้ (Username)</FormLabel>
                   <FormControl>
-                    <Input placeholder="name@company.com" {...field} disabled={isPending} />
+                    <Input placeholder="เช่น admin" {...field} disabled={isPending} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

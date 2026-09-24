@@ -5,7 +5,7 @@ import { AuthError } from "next-auth";
 import { z } from "zod";
 
 const loginSchema = z.object({
-  email: z.string().email({ message: "กรุณาระบุอีเมลให้ถูกต้อง" }),
+  username: z.string().min(1, { message: "กรุณาระบุชื่อผู้ใช้" }),
   password: z.string().min(1, { message: "กรุณาระบุรหัสผ่าน" }),
 });
 
@@ -22,7 +22,7 @@ export async function authenticate(
     }
 
     await signIn("credentials", {
-      email: parsed.data.email,
+      username: parsed.data.username,
       password: parsed.data.password,
       redirect: false,
     });
@@ -32,7 +32,7 @@ export async function authenticate(
     if (error instanceof AuthError) {
       switch (error.type) {
         case "CredentialsSignin":
-          return "อีเมลหรือรหัสผ่านไม่ถูกต้อง";
+          return "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง";
         default:
           return "เกิดข้อผิดพลาดในการเข้าสู่ระบบ";
       }

