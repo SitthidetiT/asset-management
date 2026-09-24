@@ -98,40 +98,39 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
       }
     };
 
-    // Add Logo in the center (approx col F for 12 columns)
+    // Add Logo (Enlarged, on the left)
     const logoId = workbook.addImage({
       base64: LogoBase64,
       extension: "png",
     });
     worksheet.addImage(logoId, {
-      tl: { col: 5, row: 0 },
-      ext: { width: 120, height: 60 }
+      tl: { col: 0, row: 0 },
+      ext: { width: 160, height: 80 } // Enlarged
     });
 
-    // Make space for logo
-    worksheet.addRow([]);
-    worksheet.addRow([]);
-    worksheet.addRow([]);
-    worksheet.addRow([]);
-
-    // Add Company Headers
-    worksheet.mergeCells('A5:L5');
-    const titleCell = worksheet.getCell('A5');
+    // Add Company Headers on the right of the logo (cols D to L)
+    worksheet.mergeCells('D1:L1');
+    const titleCell = worksheet.getCell('D1');
     titleCell.value = "AUTO - TECH SYSTEMS CO.,LTD";
     titleCell.font = { name: 'Arial', size: 24, bold: true, italic: true, color: { argb: 'FFFF0000' } };
-    titleCell.alignment = { horizontal: 'center' };
+    titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
-    worksheet.mergeCells('A6:L6');
-    const addressCell = worksheet.getCell('A6');
+    worksheet.mergeCells('D2:L2');
+    const addressCell = worksheet.getCell('D2');
     addressCell.value = "Manufacturing : 58/2,58/71 Moo 9 T.Raikhing A.Samphran Nakornpathom 73210 Thailand (Head Office)";
     addressCell.font = { name: 'Arial', size: 10, bold: true };
-    addressCell.alignment = { horizontal: 'center' };
+    addressCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
-    worksheet.mergeCells('A7:L7');
-    const contactCell = worksheet.getCell('A7');
+    worksheet.mergeCells('D3:L3');
+    const contactCell = worksheet.getCell('D3');
     contactCell.value = "Tel : 065 789 5226 E-Mail : ats@auto-techsystems.com Mobile : (081 777 1669) TAX: 0735556004823";
     contactCell.font = { name: 'Arial', size: 10, bold: true };
-    contactCell.alignment = { horizontal: 'center' };
+    contactCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+    // Give some row height to accommodate the logo
+    worksheet.getRow(1).height = 30;
+    worksheet.getRow(2).height = 20;
+    worksheet.getRow(3).height = 20;
 
     worksheet.addRow([]);
     worksheet.addRow([]); // Blank rows for spacing
@@ -201,24 +200,26 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
     doc.setFont("THSarabunNew");
 
     const pageWidth = doc.internal.pageSize.getWidth();
-    const centerX = pageWidth / 2;
+    // Center the text in the remaining space to the right of the logo, or just center page
+    // Using center of the page looks more balanced, but let's shift slightly to right
+    const textCenterX = (pageWidth + 40) / 2; 
 
-    // Add Logo (Centered)
-    const logoWidth = 40;
-    const logoHeight = 20;
-    doc.addImage(LogoBase64, "PNG", centerX - (logoWidth / 2), 10, logoWidth, logoHeight);
+    // Add Logo (Enlarged, Left aligned, same line as header)
+    const logoWidth = 60;
+    const logoHeight = 30;
+    doc.addImage(LogoBase64, "PNG", 14, 10, logoWidth, logoHeight);
 
     // Add Header Text
     doc.setTextColor(255, 0, 0); // Red
     doc.setFontSize(24);
     doc.setFont("helvetica", "bolditalic");
-    doc.text("AUTO - TECH SYSTEMS CO.,LTD", centerX, 38, { align: 'center' });
+    doc.text("AUTO - TECH SYSTEMS CO.,LTD", textCenterX, 18, { align: 'center' });
     
     doc.setTextColor(0, 0, 0); // Black
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
-    doc.text("Manufacturing : 58/2,58/71 Moo 9 T.Raikhing A.Samphran Nakornpathom 73210 Thailand (Head Office)", centerX, 45, { align: 'center' });
-    doc.text("Tel : 065 789 5226 E-Mail : ats@auto-techsystems.com Mobile : (081 777 1669) TAX: 0735556004823", centerX, 50, { align: 'center' });
+    doc.text("Manufacturing : 58/2,58/71 Moo 9 T.Raikhing A.Samphran Nakornpathom 73210 Thailand (Head Office)", textCenterX, 26, { align: 'center' });
+    doc.text("Tel : 065 789 5226 E-Mail : ats@auto-techsystems.com Mobile : (081 777 1669) TAX: 0735556004823", textCenterX, 32, { align: 'center' });
 
     // Table Data
     const tableColumn = [
@@ -243,7 +244,7 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
     autoTable(doc, {
       head: [tableColumn],
       body: tableRows,
-      startY: 58,
+      startY: 45,
       styles: {
         font: "THSarabunNew", // Use Thai font in table
         fontSize: 12,
