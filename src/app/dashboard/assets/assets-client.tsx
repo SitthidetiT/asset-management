@@ -98,14 +98,14 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
       }
     };
 
-    // Add Logo (Far left)
+    // Add Logo (Shifted right to be closer to centered text)
     const logoId = workbook.addImage({
       base64: LogoBase64,
       extension: "png",
     });
     worksheet.addImage(logoId, {
-      tl: { col: 0, row: 0 }, // Column A
-      ext: { width: 220, height: 85 }
+      tl: { col: 2, row: 0 }, // Column C
+      ext: { width: 180, height: 75 }
     });
 
     // Add Company Headers (Merged across A to L, so it is perfectly centered)
@@ -202,10 +202,10 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
     const pageWidth = doc.internal.pageSize.getWidth();
     const centerX = pageWidth / 2;
 
-    // Add Logo (Far Left)
-    const logoWidth = 55;
-    const logoHeight = 28;
-    doc.addImage(LogoBase64, "PNG", 14, 10, logoWidth, logoHeight);
+    // Add Logo (Shifted right to be closer to centered text)
+    const logoWidth = 50;
+    const logoHeight = 25;
+    doc.addImage(LogoBase64, "PNG", 55, 10, logoWidth, logoHeight);
 
     // Add Header Text (Perfectly Centered)
     doc.setTextColor(255, 0, 0); // Red
