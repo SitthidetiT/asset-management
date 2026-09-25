@@ -157,43 +157,6 @@ export function AssetsClient({ initialData }: { initialData: AssetRow[] }) {
       }
     };
 
-    // Add Logo (Shifted right to be closer to centered text)
-    const logoId = workbook.addImage({
-      base64: LogoBase64,
-      extension: "png",
-    });
-    worksheet.addImage(logoId, {
-      tl: { col: 1, row: 0 }, // Column C
-      ext: { width: 180, height: 75 }
-    });
-
-    // Add Company Headers (Merged across A to L, so it is perfectly centered)
-    worksheet.mergeCells('A1:L1');
-    const titleCell = worksheet.getCell('A1');
-    titleCell.value = "AUTO - TECH SYSTEMS CO.,LTD";
-    titleCell.font = { name: 'Arial', size: 24, bold: true, italic: true, color: { argb: 'FFFF0000' } };
-    titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
-
-    worksheet.mergeCells('A2:L2');
-    const addressCell = worksheet.getCell('A2');
-    addressCell.value = "Manufacturing : 58/2,58/71 Moo 9 T.Raikhing A.Samphran Nakornpathom 73210 Thailand (Head Office)";
-    addressCell.font = { name: 'Arial', size: 10, bold: true };
-    addressCell.alignment = { horizontal: 'center', vertical: 'middle' };
-
-    worksheet.mergeCells('A3:L3');
-    const contactCell = worksheet.getCell('A3');
-    contactCell.value = "Tel : 065 789 5226 E-Mail : ats@auto-techsystems.com Mobile : (081 777 1669) TAX: 0735556004823";
-    contactCell.font = { name: 'Arial', size: 10, bold: true };
-    contactCell.alignment = { horizontal: 'center', vertical: 'middle' };
-
-    // Give some row height to accommodate the logo
-    worksheet.getRow(1).height = 30;
-    worksheet.getRow(2).height = 20;
-    worksheet.getRow(3).height = 20;
-
-    worksheet.addRow([]);
-    worksheet.addRow([]); // Blank rows for spacing
-
     // Add Table Headers
     const activeCols = ALL_COLUMNS.filter(c => selectedColumns.includes(c.id));
     const headers = activeCols.map(c => c.label);
