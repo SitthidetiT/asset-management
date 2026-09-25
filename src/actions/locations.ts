@@ -21,7 +21,8 @@ export async function createLocation(data: unknown) {
     const validated = locationSchema.parse(data);
     await db.insert(locations).values({
       code: validated.code,
-      name: validated.name,
+      nameTh: validated.nameTh,
+      nameEn: validated.nameEn,
       description: validated.description,
     });
     revalidatePath("/dashboard/master/locations");
@@ -39,7 +40,8 @@ export async function updateLocation(id: string, data: unknown) {
       .update(locations)
       .set({
         code: validated.code,
-        name: validated.name,
+        nameTh: validated.nameTh,
+        nameEn: validated.nameEn,
         description: validated.description,
         updatedAt: new Date(),
       })

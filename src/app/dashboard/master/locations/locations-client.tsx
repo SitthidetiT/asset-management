@@ -38,7 +38,8 @@ import { Card, CardContent } from "@/components/ui/card";
 type Location = {
   id: string;
   code: string;
-  name: string;
+  nameTh: string;
+  nameEn: string;
   description: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -54,7 +55,8 @@ export default function LocationsClient({ initialData }: { initialData: Location
     resolver: zodResolver(locationSchema),
     defaultValues: {
       code: "",
-      name: "",
+      nameTh: "",
+      nameEn: "",
       description: "",
     },
   });
@@ -91,7 +93,8 @@ export default function LocationsClient({ initialData }: { initialData: Location
     setEditingId(loc.id);
     form.reset({
       code: loc.code,
-      name: loc.name,
+      nameTh: loc.nameTh,
+      nameEn: loc.nameEn,
       description: loc.description || "",
     });
     setOpen(true);
@@ -120,7 +123,7 @@ export default function LocationsClient({ initialData }: { initialData: Location
   const handleOpenChange = (open: boolean) => {
     setOpen(open);
     if (!open) {
-      form.reset({ code: "", name: "", description: "" });
+      form.reset({ code: "", nameTh: "", nameEn: "", description: "" });
       setEditingId(null);
     }
   };
@@ -155,12 +158,25 @@ export default function LocationsClient({ initialData }: { initialData: Location
                   />
                   <FormField
                     control={form.control}
-                    name="name"
+                    name="nameTh"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>ชื่อสถานที่</FormLabel>
+                        <FormLabel>ชื่อสถานที่ (ไทย)</FormLabel>
                         <FormControl>
-                          <Input placeholder="เช่น Head Office" {...field} />
+                          <Input placeholder="เช่น โรงงาน 1" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="nameEn"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>ชื่อสถานที่ (อังกฤษ)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="เช่น Factory 1" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -193,7 +209,8 @@ export default function LocationsClient({ initialData }: { initialData: Location
             <TableHeader>
               <TableRow>
                 <TableHead>รหัส</TableHead>
-                <TableHead>ชื่อสถานที่</TableHead>
+                <TableHead>ชื่อสถานที่ (ไทย)</TableHead>
+                <TableHead>ชื่อสถานที่ (อังกฤษ)</TableHead>
                 <TableHead>รายละเอียด</TableHead>
                 <TableHead className="text-right">จัดการ</TableHead>
               </TableRow>
@@ -201,13 +218,14 @@ export default function LocationsClient({ initialData }: { initialData: Location
             <TableBody>
               {initialData.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center">ไม่พบข้อมูล</TableCell>
+                  <TableCell colSpan={5} className="text-center">ไม่พบข้อมูล</TableCell>
                 </TableRow>
               ) : (
                 initialData.map((loc) => (
                   <TableRow key={loc.id}>
                     <TableCell className="font-medium">{loc.code}</TableCell>
-                    <TableCell>{loc.name}</TableCell>
+                    <TableCell>{loc.nameTh}</TableCell>
+                    <TableCell>{loc.nameEn}</TableCell>
                     <TableCell>{loc.description || "-"}</TableCell>
                     <TableCell className="text-right">
                       <Button variant="ghost" size="icon" onClick={() => handleEdit(loc)}>

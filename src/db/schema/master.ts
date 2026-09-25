@@ -22,7 +22,8 @@ export const categories = pgTable("categories", {
 export const locations = pgTable("locations", {
   id: uuid("id").defaultRandom().primaryKey(),
   code: varchar("code", { length: 50 }).notNull().unique(),
-  name: varchar("name", { length: 255 }).notNull(),
+  nameTh: varchar("name_th", { length: 255 }).notNull().default(''),
+  nameEn: varchar("name_en", { length: 255 }).notNull().default(''),
   description: text("description"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

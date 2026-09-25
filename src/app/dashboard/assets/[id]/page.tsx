@@ -21,7 +21,7 @@ export default async function EditAssetPage({ params }: { params: Promise<{ id: 
   // Fetch master data for dropdowns
   const [categoriesData, locationsData, departmentsData, employeesData] = await Promise.all([
     db.select({ id: categories.id, nameTh: categories.nameTh, code: categories.code }).from(categories),
-    db.select({ id: locations.id, name: locations.name, code: locations.code }).from(locations),
+    db.select({ id: locations.id, nameTh: locations.nameTh, code: locations.code }).from(locations),
     db.select({ id: departments.id, name: departments.name, code: departments.code }).from(departments),
     db.select({ id: employees.id, firstName: employees.firstName, lastName: employees.lastName, employeeCode: employees.employeeCode }).from(employees).where(eq(employees.isActive, true)),
   ]);

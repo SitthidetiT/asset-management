@@ -20,7 +20,7 @@ import Link from "next/link";
 
 type MasterDataProps = {
   categories: { id: string; nameTh: string; code: string }[];
-  locations: { id: string; name: string; code: string }[];
+  locations: { id: string; nameTh: string; code: string }[];
   departments: { id: string; name: string; code: string }[];
   employees: { id: string; firstName: string; lastName: string; employeeCode: string }[];
 };
@@ -165,7 +165,7 @@ export function AssetForm({
                         onValueChange={field.onChange} 
                         value={field.value} 
                         disabled={isEdit}
-                        items={masterData.locations.map((l) => ({ value: l.id, label: `${l.code} - ${l.name}` }))}
+                        items={masterData.locations.map((l) => ({ value: l.id, label: `${l.code} - ${l.nameTh}` }))}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -174,8 +174,8 @@ export function AssetForm({
                         </FormControl>
                         <SelectContent>
                           {masterData.locations.map((l) => (
-                            <SelectItem key={l.id} value={l.id} label={`${l.code} - ${l.name}`}>
-                              {`${l.code} - ${l.name}`}
+                            <SelectItem key={l.id} value={l.id} label={`${l.code} - ${l.nameTh}`}>
+                              {`${l.code} - ${l.nameTh}`}
                             </SelectItem>
                           ))}
                         </SelectContent>

@@ -18,7 +18,8 @@ export const categorySchema = z.object({
 export const locationSchema = z.object({
   id: z.string().uuid().optional(),
   code: z.string().min(1, "กรุณาระบุรหัสสถานที่").max(50),
-  name: z.string().min(1, "กรุณาระบุชื่อสถานที่").max(255),
+  nameTh: z.string().min(1, "กรุณาระบุชื่อสถานที่ (ไทย)").max(255),
+  nameEn: z.string().min(1, "กรุณาระบุชื่อสถานที่ (อังกฤษ)").max(255),
   description: z.string().optional(),
 });
 
